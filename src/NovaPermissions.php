@@ -1,11 +1,15 @@
 <?php
+
 namespace Eminiarts\NovaPermissions;
 
+use Eminiarts\NovaPermissions\Nova\Permission;
+use Eminiarts\NovaPermissions\Nova\Role;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Laravel\Nova\Menu\MenuItem;
+use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool;
-use Eminiarts\NovaPermissions\Nova\Role;
-use Eminiarts\NovaPermissions\Nova\Permission;
 
 class NovaPermissions extends Tool
 {
@@ -26,24 +30,13 @@ class NovaPermissions extends Tool
      */
     public function boot()
     {
-        Nova::script('NovaPermissions', __DIR__ . '/../dist/js/tool.js');
-        Nova::style('NovaPermissions', __DIR__ . '/../dist/css/tool.css');
+        Nova::script('permissions', __DIR__ . '/../dist/js/field.js');
+        Nova::style('permissions', __DIR__ . '/../dist/css/field.css');
 
         Nova::resources([
             $this->roleResource,
             $this->permissionResource,
         ]);
-    }
-
-    /**
-     * Build the menu that renders the navigation links for the tool.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return mixed
-     */
-    public function menu(Request $request)
-    {
-        return null;
     }
 
     /**
@@ -57,7 +50,7 @@ class NovaPermissions extends Tool
     }
 
     /**
-     * @param  string  $permissionResource
+     * @param string $permissionResource
      * @return mixed
      */
     public function permissionResource(string $permissionResource)
@@ -70,7 +63,7 @@ class NovaPermissions extends Tool
     /**
      * Build the view that renders the navigation links for the tool.
      *
-     * @return \Illuminate\View\View
+     * @return View
      */
     public function renderNavigation()
     {
@@ -78,7 +71,7 @@ class NovaPermissions extends Tool
     }
 
     /**
-     * @param  string  $roleResource
+     * @param string $roleResource
      * @return mixed
      */
     public function roleResource(string $roleResource)
@@ -86,5 +79,13 @@ class NovaPermissions extends Tool
         $this->roleResource = $roleResource;
 
         return $this;
+    }
+
+    public function menu(Request $request)
+    {
+        return MenuSection::make('Security', [
+            MenuItem::resource(Role::class),
+            MenuItem::resource(Permission::class),
+        ])->icon('shield');
     }
 }
